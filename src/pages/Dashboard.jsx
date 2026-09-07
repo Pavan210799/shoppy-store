@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { useProducts } from "../context/ProductContext";
 import SummaryCards from "../components/dashboard/SummaryCards";
 import RatingTrendChart from "../components/dashboard/RatingTrendChart";
@@ -90,9 +92,24 @@ function ChartSkeleton({ tall = false }) {
 }
 
 function Dashboard() {
+  const location = useLocation();
   const { loading, error } = useProducts();
+  const shouldBoot = Boolean(location.state?.boot);
+  const [pageReady, setPageReady] = useState(!shouldBoot);
 
-  if (loading) {
+  useEffect(() => {
+    if (!shouldBoot) {
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setPageReady(true);
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, [shouldBoot]);
+
+  if (loading || !pageReady) {
     return <DashboardSkeleton />;
   }
 

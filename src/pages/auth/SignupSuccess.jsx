@@ -34,6 +34,7 @@ function SignupSuccess() {
 
       <Link
         to="/dashboard"
+        state={{ boot: true }}
         className="
           mt-7
           inline-flex

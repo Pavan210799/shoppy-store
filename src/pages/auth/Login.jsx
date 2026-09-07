@@ -17,7 +17,10 @@ function Login() {
 
     try {
       login({ email, password });
-      navigate("/dashboard", { replace: true });
+      navigate("/dashboard", {
+        replace: true,
+        state: { boot: true },
+      });
     } catch (nextError) {
       setError(nextError.message);
     }

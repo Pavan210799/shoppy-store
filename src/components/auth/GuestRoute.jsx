@@ -5,7 +5,13 @@ function GuestRoute() {
   const { isAuthenticated } = useAuth();
 
   if (isAuthenticated) {
-    return <Navigate to="/dashboard" replace />;
+    return (
+      <Navigate
+        to="/dashboard"
+        replace
+        state={{ boot: true }}
+      />
+    );
   }
 
   return <Outlet />;
