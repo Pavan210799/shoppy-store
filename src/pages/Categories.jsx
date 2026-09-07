@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Armchair,
@@ -27,9 +27,38 @@ const CATEGORY_DETAILS = {
   },
 };
 
+function CategoriesSkeleton() {
+  return (
+    <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      {Array.from({ length: 4 }).map((_, index) => (
+        <article
+          key={index}
+          className="overflow-hidden rounded-2xl border border-line bg-card p-4"
+        >
+          <div className="aspect-square animate-pulse rounded-xl bg-soft" />
+          <div className="mt-4 space-y-3">
+            <div className="h-4 w-24 animate-pulse rounded bg-soft" />
+            <div className="h-3 w-full animate-pulse rounded bg-soft" />
+            <div className="h-3 w-2/3 animate-pulse rounded bg-soft" />
+          </div>
+        </article>
+      ))}
+    </section>
+  );
+}
+
 function Categories() {
   const navigate = useNavigate();
   const { products, loading, error } = useProducts();
+  const [pageReady, setPageReady] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageReady(true);
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   const categories = useMemo(() => {
     const grouped = new Map();
@@ -60,24 +89,8 @@ function Categories() {
     return [...grouped.values()];
   }, [products]);
 
-  if (loading) {
-    return (
-      <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {Array.from({ length: 4 }).map((_, index) => (
-          <article
-            key={index}
-            className="overflow-hidden rounded-2xl border border-line bg-card p-4"
-          >
-            <div className="aspect-square animate-pulse rounded-xl bg-soft" />
-            <div className="mt-4 space-y-3">
-              <div className="h-4 w-24 animate-pulse rounded bg-soft" />
-              <div className="h-3 w-full animate-pulse rounded bg-soft" />
-              <div className="h-3 w-2/3 animate-pulse rounded bg-soft" />
-            </div>
-          </article>
-        ))}
-      </section>
-    );
+  if (loading || !pageReady) {
+    return <CategoriesSkeleton />;
   }
 
   if (error) {

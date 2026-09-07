@@ -52,6 +52,36 @@ function getProductsPerPage() {
   return 6;
 }
 
+function ProductsPageSkeleton({ productsPerPage }) {
+  return (
+    <div className="space-y-4">
+      <section className="w-full rounded-2xl border border-line bg-card p-4">
+        <div className="flex items-center gap-3">
+          <div className="h-9 min-w-0 flex-1 animate-pulse rounded-xl bg-soft" />
+          <div className="h-9 w-9 shrink-0 animate-pulse rounded-xl bg-soft md:w-20" />
+        </div>
+
+        <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:gap-5">
+          <div className="h-9 w-full animate-pulse rounded-xl bg-soft sm:w-[180px]" />
+          <div className="h-9 w-full animate-pulse rounded-xl bg-soft sm:w-[150px]" />
+          <div className="h-9 min-w-0 flex-1 animate-pulse rounded-xl bg-soft" />
+        </div>
+      </section>
+
+      <ProductGrid
+        products={[]}
+        productsPerPage={productsPerPage}
+        loading
+        error={null}
+        wishlist={[]}
+        cart={[]}
+        onToggleWishlist={() => {}}
+        onToggleCart={() => {}}
+      />
+    </div>
+  );
+}
+
 function Products() {
   const {
     products,
@@ -85,8 +115,17 @@ function Products() {
     useState(false);
   const [paginationLoading, setPaginationLoading] =
     useState(false);
+  const [pageReady, setPageReady] = useState(false);
 
   const hasShownProducts = useRef(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setPageReady(true);
+    }, 800);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const updateProductsPerPage = () => {
@@ -370,6 +409,12 @@ function Products() {
     initialLoading ||
     filterLoading ||
     paginationLoading;
+
+  if (initialLoading || !pageReady) {
+    return (
+      <ProductsPageSkeleton productsPerPage={productsPerPage} />
+    );
+  }
 
   return (
     <div className="space-y-4">
